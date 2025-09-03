@@ -22,6 +22,11 @@
                                     <i class="bx bx-home side-menu__icon"></i> <span class="side-menu__label">Projects</span>
                                 </a>
                             </li>
+                            <li class="slide">
+                                <a href="/issues" class="side-menu__item @yield('issues_link')">
+                                    <i class="bx bx-home side-menu__icon"></i> <span class="side-menu__label">Issues</span>
+                                </a>
+                            </li>
 
                             @can('authentication-rights')
                             <li class="slide__category"><span class="category-name">Users</span></li>
