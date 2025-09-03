@@ -133,6 +133,54 @@
         }
       }
     });
+
+
+
+
+
+    let assigneesChoices;
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('assignees-multiselect');
+      if (el && window.Choices) {
+        assigneesChoices = new Choices(el, { removeItemButton: true, shouldSort: false, searchEnabled: true });
+      }
+    });
+
+    document.getElementById('sync-assignees-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const token = form.querySelector('input[name=_token]').value;
+      const url = "{{ route('issues.assignees.sync', $issue) }}";
+
+      const values = (window.Choices && assigneesChoices)
+        ? assigneesChoices.getValue(true)
+        : Array.from(document.getElementById('assignees-multiselect').selectedOptions).map(o => o.value);
+
+      const fd = new FormData();
+      values.forEach(v => fd.append('user_ids[]', v));
+
+      const res = await fetch(url, { method: 'POST', headers: { 'X-CSRF-TOKEN': token }, body: fd });
+
+      if (res.ok) {
+        const html = await res.text();
+        document.getElementById('issue-assignees').innerHTML = html;
+        bootstrap.Modal.getInstance(document.getElementById('manageAssigneesModal')).hide();
+
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'success', title: 'Saved', text: 'Assignees updated.', timer: 1500, showConfirmButton: false });
+        }
+      } else if (res.status === 422) {
+        const payload = await res.json();
+        const errors = Object.values(payload.errors).flat().join('\n');
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon:'error', title:'Validation error', text: errors });
+        }
+      } else {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon:'error', title:'Error', text:'Failed to update assignees.' });
+        }
+      }
+    });
   </script>
 @endsection
 
@@ -213,6 +261,21 @@
         <div id="issue-tags">
           @include('issues.partials.tag_pills', ['issue' => $issue])
         </div>
+
+        <hr class="mt-5">
+        
+
+         <div class="my-2 mt-3 d-flex justify-content-between">
+          <h6 class="mb-2">{{ __('Assignees') }}</h6>
+          <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#manageAssigneesModal">
+            {{ __('Manage Assignees') }}
+          </button>
+        </div>
+        <div id="issue-assignees" class="mt-3">
+          @include('issues.partials.assignee_pills', ['issue' => $issue])
+        </div>
+       
+
       </div>
     </div>
   </div>
@@ -280,5 +343,37 @@
     </form>
   </div>
 </div>
+
+<div class="modal fade" id="manageAssigneesModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <form id="sync-assignees-form" class="modal-content">
+      @csrf
+      <div class="modal-header">
+        <h6 class="modal-title">{{ __('Manage Assignees') }}</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <label class="form-label">{{ __('Select users') }}</label>
+        <select id="assignees-multiselect" name="user_ids[]" multiple class="form-control">
+          @foreach(\App\Models\User::orderBy('name')->get(['id','name','surname']) as $user)
+            <option value="{{ $user->id }}" @selected($issue->users->contains('id', $user->id))>
+              {{ $user->name }} {{ $user->surname }}
+            </option>
+          @endforeach
+        </select>
+        <small class="text-muted d-block mt-2">
+          {{ __('Pick one or more users. Leaving none selected will remove all assignees.') }}
+        </small>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-light rounded-pill" type="button" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+        <button class="btn btn-primary rounded-pill" type="submit">{{ __('Save') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
 @endsection
