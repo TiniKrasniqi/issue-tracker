@@ -67,14 +67,18 @@
                                            class="btn btn-icon btn-info-transparent rounded-pill btn-wave">
                                             <i class="ri-eye-line"></i>
                                         </a>
+                                        @can('update', $project)
                                         <a href="{{ route('projects.edit', $project) }}"
                                            class="btn btn-icon btn-success-transparent rounded-pill btn-wave">
                                             <i class="ri-pencil-fill"></i>
                                         </a>
+                                        @endcan
+                                        @can('delete', $project)
                                         <button class="btn btn-icon btn-danger-transparent rounded-pill btn-wave deleteBtn"
                                                 data-id="{{ $project->id }}" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                             <i class="ri-delete-bin-fill"></i>
                                         </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Project; 
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -78,6 +79,7 @@ class ProjectController extends Controller
      */
    public function edit(Project $project)
     {
+        Gate::authorize('update', $project);
         return view('projects.edit', [
             'project' => $project,
             'name1'   => 'Dashboard',
@@ -92,6 +94,7 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        Gate::authorize('update', $project);
         $project->update($request->validated());
 
         return redirect()
@@ -104,6 +107,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        Gate::authorize('delete', $project);
         try {
             $project->delete();
 
