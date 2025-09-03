@@ -11,6 +11,14 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
             crossorigin="anonymous"></script>
+<script>
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.deleteIssueBtn');
+    if (!btn) return;
+    const id = btn.getAttribute('data-id');
+    document.getElementById('deleteIssueForm').setAttribute('action', '{{ url('issues') }}/' + id);
+  });
+</script>
     @include('partials.datatable-scripts')
 @endsection
 
@@ -25,10 +33,10 @@
                     {{ $project->name }}
                 </div>
                 <div class="btn-list">
-                    <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-success rounded-pill">
+                    <a href="{{ route('projects.edit', $project) }}" class="btn btn-outline-secondary rounded-pill">
                         {{ __('Edit Project') }}
                     </a>
-                    <a href="{{ route('projects.index') }}" class="btn btn-sm btn-light rounded-pill">
+                    <a href="{{ route('projects.index') }}" class="btn btn-outline-light rounded-pill">
                         {{ __('Back to Projects') }}
                     </a>
                 </div>
@@ -69,10 +77,11 @@
         <div class="card custom-card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="card-title mb-0">{{ __('Issues') }}</div>
-                <a href="#"
-                   class="btn btn-primary rounded-pill">
+                <a href="{{ route('issues.create', ['project_id' => $project->id]) }}"
+                    class="btn btn-primary rounded-pill">
                     {{ __('New Issue') }}
                 </a>
+
             </div>
 
             <div class="card-body">
@@ -120,16 +129,21 @@
                                         </td>
                                         <td>
                                             <div class="btn-list">
-                                                <a href=""
-                                                   class="btn btn-icon btn-info-transparent rounded-pill btn-wave">
-                                                    <i class="ri-eye-line"></i>
+                                                <a href="{{ route('issues.show', $issue) }}"
+                                                class="btn btn-icon btn-info-transparent rounded-pill btn-wave">
+                                                <i class="ri-eye-line"></i>
                                                 </a>
-                                                <a href=""
-                                                   class="btn btn-icon btn-success-transparent rounded-pill btn-wave">
-                                                    <i class="ri-pencil-fill"></i>
+                                                <a href="{{ route('issues.edit', $issue) }}"
+                                                class="btn btn-icon btn-success-transparent rounded-pill btn-wave">
+                                                <i class="ri-pencil-fill"></i>
                                                 </a>
+                                                <button class="btn btn-icon btn-danger-transparent rounded-pill btn-wave deleteIssueBtn"
+                                                        data-id="{{ $issue->id }}" data-bs-toggle="modal" data-bs-target="#deleteIssueModal">
+                                                <i class="ri-delete-bin-fill"></i>
+                                                </button>
                                             </div>
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -139,5 +153,28 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="deleteIssueModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-top text-center">
+    <div class="modal-content modal-content-demo">
+      <div class="modal-header">
+        <h6 class="modal-title">{{ __('Delete Issue') }}</h6>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-start">
+        <h6>{{ __('Are you sure you want to delete this issue?') }}</h6>
+        <span class="text-danger">{{ __("This action can't be reverted back!") }}</span>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteIssueForm" action="" method="POST">
+          @csrf
+          @method('DELETE')
+          <button class="btn btn-danger rounded-pill" type="submit">{{ __('Delete Now') }}</button>
+          <button class="btn btn-light rounded-pill" data-bs-dismiss="modal" type="button">{{ __('Cancel') }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection
