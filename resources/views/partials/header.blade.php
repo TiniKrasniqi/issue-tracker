@@ -37,7 +37,13 @@
                     <!-- Start::header-content-right -->
                     <div class="header-content-right">
                     
-                  
+                        <div class="header-element ">
+                            <a href="javascript:void(0);" id="searchIcon" class="header-link ">
+                                <i class="bx bx-search header-link-icon"></i>
+                            </a>
+                        </div>
+                      
+
                         <!-- Start::header-element -->
                         <div class="header-element header-theme-mode">
                             <!-- Start::header-link|layout-setting -->
@@ -61,13 +67,7 @@
                         <!-- End::header-element -->
                      
                     
-                        <!-- Start::header-element -->
-                        <div class="header-element header-fullscreen">
-                            <!-- Start::header-link -->
-                            <a onclick="openFullscreen();" class="header-link"> <i class="bx bx-fullscreen full-screen-open header-link-icon"></i> <i class="bx bx-exit-fullscreen full-screen-close header-link-icon d-none"></i> </a>
-                            <!-- End::header-link -->
-                        </div>
-                        <!-- End::header-element -->
+                        
                         <!-- Start::header-element -->
                         <div class="header-element">
                             <!-- Start::header-link|dropdown-toggle -->

@@ -58,6 +58,7 @@
         <div class="page">
             
             @include('partials.header')
+            @include('search.partials.overlay')
             @include('partials.sidebar')
             <!-- Start::app-content -->
             <div class="main-content app-content">
@@ -144,6 +145,7 @@
         <!-- Custom JS -->
         <script src="js/custom.js"></script>
         <script src="libs/sweetalert2/sweetalert2.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
         <script>
             @if (session('status'))
                 Swal.fire({
@@ -180,12 +182,65 @@
                     icon: 'error'
                 });
             @endif
-        </script>
-        <script>
+
             document.addEventListener('DOMContentLoaded', function() {
                 var preloader = document.getElementById('preloader');
                 preloader.style.display = 'none';
             });
+
+            function debounce(fn, delay = 300) {
+                let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+            }
+
+            const overlay   = document.getElementById('global-search-overlay');
+            const input     = document.getElementById('global-search-input');
+            const closeBtn  = document.getElementById('global-search-close');
+            const bodyEl    = document.getElementById('global-search-body');
+            const loadingEl = document.getElementById('global-search-loading');
+            const resultsEl = document.getElementById('global-search-results');
+            const emptyEl   = document.getElementById('global-search-empty');
+
+            window.openGlobalSearch = function(preset = '') {
+                overlay.classList.remove('d-none');
+                resultsEl.innerHTML = '';
+                emptyEl.classList.add('d-none');
+                loadingEl.classList.add('d-none');
+                input.value = preset || input.value || '';
+                setTimeout(() => input.focus(), 10);
+            };
+
+            function closeOverlay() { overlay.classList.add('d-none'); }
+            closeBtn.addEventListener('click', closeOverlay);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.classList.contains('d-none')) closeOverlay(); });
+
+            const doSearch = debounce(async (q) => {
+                if (!q || q.trim().length < 2) {
+                    resultsEl.innerHTML = '';
+                    emptyEl.classList.add('d-none');
+                    loadingEl.classList.add('d-none');
+                    return;
+                }
+
+                loadingEl.classList.remove('d-none');
+                emptyEl.classList.add('d-none');
+                
+                try {
+                    const res = await fetch(`{{ route('search.index') }}?q=` + encodeURIComponent(q));
+                    const data = await res.json(); // { html }
+                    resultsEl.innerHTML = data.html || '';
+                    loadingEl.classList.add('d-none');
+                    emptyEl.classList.toggle('d-none', !!data.html?.trim());
+                } catch (err) {
+                    loadingEl.classList.add('d-none');
+                    resultsEl.innerHTML = '';
+                    emptyEl.classList.remove('d-none');
+                }
+            
+            }, 350);
+
+            input.addEventListener('input', (e) => doSearch(e.target.value));
+            document.getElementById('searchIcon').addEventListener('focus', () => openGlobalSearch());
         </script>
 
 
