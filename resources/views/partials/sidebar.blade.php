@@ -18,8 +18,8 @@
                         <ul class="main-menu">
                             <li class="slide__category"><span class="category-name">Main</span></li>
                             <li class="slide">
-                                <a href="/" class="side-menu__item @yield('dashboard_link')">
-                                    <i class="bx bx-home side-menu__icon"></i> <span class="side-menu__label">Dashboard</span>
+                                <a href="/projects" class="side-menu__item @yield('projects_link')">
+                                    <i class="bx bx-home side-menu__icon"></i> <span class="side-menu__label">Projects</span>
                                 </a>
                             </li>
 

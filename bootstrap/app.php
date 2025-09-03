@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware(['web', 'auth'])->group(base_path('routes/user/web.php'));
             Route::middleware(['web', 'auth'])->group(base_path('routes/role/web.php'));
             Route::middleware(['web', 'auth'])->group(base_path('routes/settings/web.php'));
+            Route::middleware(['web', 'auth'])->group(base_path('routes/projects.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware) {

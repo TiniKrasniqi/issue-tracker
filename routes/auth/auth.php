@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 
 
 Route::GET('/', function(){
-    return redirect()->route('login');
+    return redirect("/projects");
 });
 
 
