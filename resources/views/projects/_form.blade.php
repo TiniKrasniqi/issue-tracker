@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="mt-4 d-flex gap-2">
+    <div class="mt-4 d-flex gap-2 justify-content-end">
         <button class="btn btn-primary rounded-pill">{{ $project ? __('Update') : __('Create') }}</button>
         <a href="{{ route('projects.index') }}" class="btn btn-light rounded-pill">{{ __('Cancel') }}</a>
     </div>

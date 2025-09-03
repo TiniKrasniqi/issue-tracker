@@ -37,7 +37,7 @@
                         @error('color') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn btn-primary rounded-pill w-100">{{ __('Add Tag') }}</button>
+                        <button class="btn btn-primary rounded-pill w-100"><i class="bx bx-plus"></i> {{ __('Add Tag') }}</button>
                     </div>
                 </form>
             </div>

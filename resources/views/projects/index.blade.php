@@ -29,7 +29,7 @@
             <div class="card-header d-flex align-items-center justify-content-between">
                 <div class="card-title">{{ __('Projects') }}</div>
                 <a href="{{ route('projects.create') }}" class="btn btn-primary rounded-pill">
-                    {{ __('New Project') }}
+                    <i class="bx bx-plus"></i>{{ __('New Project') }} 
                 </a>
             </div>
 
@@ -108,7 +108,7 @@
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-danger rounded-pill" type="submit">{{ __('Delete Now') }}</button>
-                    <button class="btn btn-light rounded-pill" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                 </form>
             </div>
         </div>

@@ -60,7 +60,7 @@
     </div>
   </div>
 
-  <div class="mt-4 d-flex gap-2">
+  <div class="mt-4 d-flex gap-2 justify-content-end">
     <button class="btn btn-primary rounded-pill">{{ $issue ? __('Update') : __('Create') }}</button>
     <a href="{{ route('issues.index') }}" class="btn btn-light rounded-pill">{{ __('Cancel') }}</a>
   </div>

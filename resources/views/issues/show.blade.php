@@ -237,7 +237,7 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <div class="card-title mb-0">{{ __('Comments') }}</div>
         <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#addCommentModal">
-          {{ __('Add Comment') }}
+          <i class="bx bx-plus"></i> {{ __('Add Comment') }}
         </button>
       </div>
       <div class="card-body">

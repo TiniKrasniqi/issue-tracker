@@ -29,7 +29,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="card-title mb-0">{{ __('Issues') }}</div>
                 <a href="{{ route('issues.create') }}" class="btn btn-primary rounded-pill">
-                    {{ __('New Issue') }}
+                    <i class="bx bx-plus"></i> {{ __('New Issue') }}
                 </a>
             </div>
 
@@ -96,8 +96,32 @@
                                             <span class="text-muted">—</span>
                                         @endif
                                     </td>
-                                    <td><span class="badge bg-secondary text-uppercase">{{ $issue->status }}</span></td>
-                                    <td><span class="badge bg-outline-primary text-uppercase">{{ $issue->priority }}</span></td>
+                                   @php
+                                        $statusColors = [
+                                            'open'        => 'bg-light text-dark',
+                                            'in_progress' => 'bg-warning text-dark',
+                                            'closed'      => 'bg-success',
+                                        ];
+                                        @endphp
+                                        <td>
+                                            <span class="badge {{ $statusColors[$issue->status] ?? 'bg-secondary' }} text-uppercase">
+                                                {{ $issue->status }}
+                                            </span>
+                                        </td>
+
+                                        
+                                        @php
+                                        $priorityColors = [
+                                            'low'    => 'bg-outline-success',
+                                            'medium' => 'bg-outline-warning',
+                                            'high'   => 'bg-outline-danger ',
+                                        ];
+                                        @endphp
+                                        <td>
+                                            <span class="badge {{ $priorityColors[$issue->priority] ?? 'bg-outline-primary' }} text-uppercase">
+                                                {{ $issue->priority }}
+                                            </span>
+                                        </td>
                                     <td>{{ $issue->due_date?->format('Y-m-d') ?? '—' }}</td>
                                     <td>
                                         @forelse($issue->tags as $tag)
@@ -153,7 +177,7 @@
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-danger rounded-pill" type="submit">{{ __('Delete Now') }}</button>
-                    <button class="btn btn-light rounded-pill" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                 </form>
             </div>
         </div>

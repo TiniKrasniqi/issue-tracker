@@ -19,12 +19,18 @@
                             <li class="slide__category"><span class="category-name">Main</span></li>
                             <li class="slide">
                                 <a href="/projects" class="side-menu__item @yield('projects_link')">
-                                    <i class="bx bx-home side-menu__icon"></i> <span class="side-menu__label">Projects</span>
+                                    <i class="bx bx-list-ul side-menu__icon"></i> <span class="side-menu__label">Projects</span>
                                 </a>
                             </li>
                             <li class="slide">
                                 <a href="/issues" class="side-menu__item @yield('issues_link')">
-                                    <i class="bx bx-home side-menu__icon"></i> <span class="side-menu__label">Issues</span>
+                                    <i class="bx bx-bug side-menu__icon"></i> <span class="side-menu__label">Issues</span>
+                                </a>
+                            </li>
+
+                            <li class="slide">
+                                <a href="/tags" class="side-menu__item @yield('tags_link')">
+                                    <i class="bx bx-tag side-menu__icon"></i> <span class="side-menu__label">Tags</span>
                                 </a>
                             </li>
 

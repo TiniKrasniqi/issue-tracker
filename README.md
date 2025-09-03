@@ -5,7 +5,7 @@ It allows a small team to manage projects, issues, tags, comments, and user role
 
 ---
 
-## ✨ Features Roadmap
+## ✨ Features
 
 ### ✅ Authentication & User Management
 - [x] Authentication (login, register, password reset, profile update)
@@ -13,28 +13,23 @@ It allows a small team to manage projects, issues, tags, comments, and user role
 - [x] User profile editing with avatars
 - [x] Application & mail settings with validation
 
-### 🚧 Core Features
-- [ ] Projects – list, create, edit, delete, show with issues
-- [ ] Issues – list (with filters), create, edit, delete, detail view
-- [ ] Tags – create, list, attach/detach via AJAX
-- [ ] Comments – AJAX load & add with validation
+### ✅ Core Features
+- [x] Projects – list, create, edit, delete, show with issues
+- [x] Issues – list (with filters), create, edit, delete, detail view
+- [x] Tags – create, list, attach/detach via AJAX
+- [x] Comments – AJAX load & add with validation
 
-### 🚧 UI / UX
-- [ ] Kanban board 
-- [ ] AJAX validation feedback on forms
-- [ ] Blade components for reusable UI parts (breadcrumbs, modals, etc.)
+### ✅ UI / UX
+- [x] SweetAlert flash messages for success/error
+- [x] Reusable Blade partials for breadcrumbs, modals, datatable styles
+- [x] Responsive design with dark mode
+- [ ] Kanban board (planned)
 
-### 🚧 Bonus Features
-- [ ] Assign users to issues (many-to-many via AJAX)
-- [ ] Authorization (only project owners can edit/delete)
-- [ ] Text search with debounce (AJAX)
+### ✅ Bonus Features
+- [x] Assign users to issues (many-to-many via AJAX)
+- [x] Authorization (only project owners can edit/delete)
+- [x] Text search with debounce (AJAX, global overlay for issues/projects/tags)
 
-### 🚧 Extra Enhancements
-- [ ] Real-time updates with Laravel Echo & Pusher (comments, status changes)
-- [ ] Export issues as PDF/CSV
-- [ ] Activity log for auditing actions
-- [ ] Global search bar integration
-- [ ] Dark mode (already part of template)
 
 ---
 
@@ -45,8 +40,9 @@ It allows a small team to manage projects, issues, tags, comments, and user role
 - **Spatie Roles & Permissions**  
 - **MySQL / MariaDB**  
 - **AJAX (vanilla JS + Blade)**  
-- **Laravel Echo & Pusher** (planned for realtime)  
-- **Laravel Pint** for code style  
+- **DataTables** for listing pages  
+- **SweetAlert2** for feedback 
+ 
 
 ---
 
@@ -67,17 +63,20 @@ After running migrations & seeding, you’ll have:
 ## 🚀 Getting Started
 
 1. Clone the repository and navigate into the project directory:  
-   git clone https://github.com/tinikrasniqi/issue-tracker.git && cd issue-tracker  
+   git clone https://github.com/tinikrasniqi/issue-tracker.git 
+   cd issue-tracker  
 
 2. Install PHP dependencies:  
    composer install  
 
 3. Copy the environment file and generate the application key and create storage link:  
-   cp .env.example .env && php artisan key:generate  && php artisan storage:link
+   cp .env.example .env 
+   php artisan key:generate  
+   php artisan storage:link
 
 4. Configure your database in the `.env` file, then run migrations with seeders to create demo data:  
    php artisan migrate --seed  
 
 5. Start the local development server:  
-   php artisan serve  
+   php artisan run (it runs the server on port 80)  
 
