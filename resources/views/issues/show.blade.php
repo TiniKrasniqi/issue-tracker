@@ -70,23 +70,83 @@
       }
 
     });
+
+    const routes = {
+      commentsIndex: "{{ route('issues.comments.index', $issue) }}",
+      commentsStore: "{{ route('issues.comments.store', $issue) }}",
+    };
+
+    async function loadComments(url) {
+      const res = await fetch(url || routes.commentsIndex);
+      if (!res.ok) return;
+      const data = await res.json(); // { html, next_page_url }
+      const list = document.getElementById('comments-list');
+      list.insertAdjacentHTML(url ? 'beforeend' : 'afterbegin', data.html);
+
+      const moreBtn = document.getElementById('load-more');
+      if (data.next_page_url) {
+        moreBtn.classList.remove('d-none');
+        moreBtn.dataset.url = data.next_page_url;
+      } else {
+        moreBtn.classList.add('d-none');
+        moreBtn.dataset.url = '';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadComments());
+    document.getElementById('load-more').addEventListener('click', (e) => loadComments(e.currentTarget.dataset.url));
+
+    document.getElementById('comment-modal-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const fd = new FormData(form);
+
+      const res = await fetch(routes.commentsStore, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': form.querySelector('input[name=_token]').value },
+        body: fd
+      });
+
+      if (res.status === 201) {
+        const html = await res.text();
+        document.getElementById('comments-list').insertAdjacentHTML('afterbegin', html);
+        form.reset();
+        // keep the user's name prefilled after reset
+        const author = form.querySelector('input[name="author_name"]');
+        if (author && "{{ auth()->user()->name ?? '' }}") author.value = "{{ auth()->user()->name ?? '' }}";
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addCommentModal'));
+        modal.hide();
+
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'success', title: 'Added', text: 'Comment added.', timer: 1500, showConfirmButton: false });
+        }
+      } else if (res.status === 422) {
+        const payload = await res.json();
+        const errors = Object.values(payload.errors).flat().join('\n');
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'error', title: 'Validation error', text: errors });
+        }
+      } else {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to add comment.' });
+        }
+      }
+    });
   </script>
 @endsection
 
 @section('content')
 @include('partials.breadcrumb', ['name1' => $name1, 'name2'=> $name2, 'name3'=> $name3])
 
-<div class="row g-3">
-
-  <div class="col-12">
-    <div class="card custom-card">
+<div class="row align-items-stretch flex-grow-1 min-vh-75"style="min-height: calc(100vh - 120px);" >
+  <div class="col-lg-9 d-flex flex-column">
+    <div class="card custom-card mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <div class="card-title mb-0">
-          {{ $issue->title }}
-        </div>
+        <div class="card-title mb-0">{{ $issue->title }}</div>
         <div class="btn-list">
-          <a href="{{ route('issues.edit', $issue) }}" class="btn  btn-outline-secondary rounded-pill">{{ __('Edit') }}</a>
-          <a href="{{ route('issues.index') }}" class="btn  btn-outline-light rounded-pill">{{ __('Back to Issues') }}</a>
+          <a href="{{ route('issues.edit', $issue) }}" class="btn btn-outline-secondary rounded-pill">{{ __('Edit') }}</a>
+          <a href="{{ route('issues.index') }}" class="btn btn-outline-light rounded-pill">{{ __('Back') }}</a>
         </div>
       </div>
       <div class="card-body">
@@ -124,36 +184,41 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="col-12">
+
     <div class="card custom-card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <div class="card-title mb-0">{{ __('Tags') }}</div>
-        <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#manageTagsModal">
-          {{ __('Edit') }}
+        <div class="card-title mb-0">{{ __('Comments') }}</div>
+        <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#addCommentModal">
+          {{ __('Add Comment') }}
         </button>
       </div>
       <div class="card-body">
+        <div id="comments-list"></div>
+        <div class="d-grid mt-3">
+          <button id="load-more" class="btn btn-light rounded-pill d-none">{{ __('Load more') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 d-flex">
+    <div class="card custom-card h-auto w-100 d-flex flex-column">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-title mb-0">{{ __('Tags') }}</div>
+        <button class="btn btn-primary  rounded-pill" data-bs-toggle="modal" data-bs-target="#manageTagsModal">
+          {{ __('Manage') }}
+        </button>
+      </div>
+      <div class="card-body flex-grow-1 overflow-auto">
         <div id="issue-tags">
           @include('issues.partials.tag_pills', ['issue' => $issue])
         </div>
       </div>
     </div>
   </div>
-  <div class="col-12">
-    <div class="card custom-card">
-      <div class="card-header">
-        <div class="card-title mb-0">{{ __('Comments') }}</div>
-      </div>
-      <div class="card-body">
-        <div class="text-muted">
-          {{ __('Comments will appear here. (AJAX load & add to be implemented)') }}
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div>
+
 
 
 
@@ -186,4 +251,34 @@
     </form>
   </div>
 </div>
+
+<div class="modal fade" id="addCommentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <form id="comment-modal-form" class="modal-content">
+      @csrf
+      <div class="modal-header">
+        <h6 class="modal-title">{{ __('Add Comment') }}</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">{{ __('Your Name') }}</label>
+          <input type="text" name="author_name" class="form-control"
+                 value="{{ auth()->user()->name ?? '' }}" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ __('Comment') }}</label>
+          <textarea name="body" class="form-control" rows="3" placeholder="{{ __('Write a comment…') }}" required></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-light rounded-pill" type="button" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+        <button class="btn btn-primary rounded-pill" type="submit">{{ __('Add') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 @endsection
